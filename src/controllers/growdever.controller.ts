@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { GrowdeverDatabase } from "../database/growdever.database";
+import { growdevers } from "../database/growdevers";
 import { Growdever } from "../models/growdever.model";
 
 export class GrowdeverController {
@@ -79,14 +80,7 @@ export class GrowdeverController {
             if (!cidade) {
                 return res.status(400).send({
                     ok: false,
-                    message: "Cidade was not provided",
-                });
-            }
-
-            if (!skills) {
-                return res.status(400).send({
-                    ok: false,
-                    message: "Skills were not provided",
+                    message: "Bah! Deu ruim",
                 });
             }
 

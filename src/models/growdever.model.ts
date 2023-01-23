@@ -7,7 +7,7 @@ export class Growdever {
         private _nome: string,
         private _idade: number,
         private _cidade: string,
-        private _skills: string[]
+        private _skills?: string[]
     ) {
         this._id = createUuid();
     }
@@ -26,13 +26,21 @@ export class Growdever {
         return this._id;
     }
 
+    public get skills() {
+        return this._skills ?? [];
+    }
+
+    public set skills(skills: string[]) {
+        this._skills = skills;
+    }
+
     public toJson() {
         return {
             id: this._id,
             nome: this._nome,
             idade: this._idade,
             // cidade: this._cidade,
-            skills: this._skills,
+            skills: this.skills,
         };
     }
 }

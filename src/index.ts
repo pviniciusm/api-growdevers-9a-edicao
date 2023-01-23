@@ -1,6 +1,5 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import { GrowdeverController } from "./controllers/growdever.controller";
-import { GrowdeverDatabase } from "./database/growdever.database";
 
 const app = express();
 app.use(express.json());
@@ -13,11 +12,13 @@ app.get("/", (req, res) => {
     });
 });
 
-// GET http://localhost:3333/growdever
-app.get("/growdever", (req, res) => {
-    const controller = new GrowdeverController();
-    return controller.list(req, res);
+// http://localhost:3333/abc/teste GET
+app.get("/abc/teste", (req: Request, res: Response) => {
+    // ...
 });
+
+// GET http://localhost:3333/growdever
+app.get("/growdever", new GrowdeverController().list);
 
 // GET http://localhost:3333/growdever/abc-1234
 app.get("/growdever/:growdeverId", new GrowdeverController().get);
