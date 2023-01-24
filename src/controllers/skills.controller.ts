@@ -45,19 +45,11 @@ export class SkillsController {
         }
     }
 
-    // "/:id/skill/:skill"
     // http://localhost:3333/growdever/5bd700e3-88ea-453a-ba62-27633d4a1f8b/skill/nodejs
     public delete(req: Request, res: Response) {
         try {
             const { id, skill } = req.params;
             const database = new GrowdeverDatabase();
-            // const growdeverIndex = database.getIndex(id);
-            // if (growdeverIndex < 0) {
-            //     return res.status(404).send({
-            //         ok: false,
-            //         message: "Growdever not found",
-            //     });
-            // }
 
             const growdever = database.get(id);
 
@@ -68,8 +60,6 @@ export class SkillsController {
                 });
             }
 
-            //    let xicaraIndex = produtos.findIndex((item) => item.nome === "Xicara");
-
             const skillIndex = growdever.skills.findIndex(
                 (item) => item === skill
             );
@@ -79,13 +69,14 @@ export class SkillsController {
                     message: "Skill not found",
                 });
             }
+
             growdever.skills.splice(skillIndex, 1);
+
             return res.status(200).send({
                 ok: true,
                 message: "Skill deleted",
                 data: growdever,
             });
-            // res.send("ok");
         } catch (error: any) {
             return res.status(500).send({
                 ok: false,
@@ -94,11 +85,3 @@ export class SkillsController {
         }
     }
 }
-
-// BODY DO CREATE SKILL
-// {
-//     "skills": [
-//         "java",
-//         "c#"
-//     ]
-// }
