@@ -1,4 +1,5 @@
 import { v4 as createUuid } from "uuid";
+import { cpf as cpfValidator } from "cpf-cnpj-validator";
 
 export class Growdever {
     private _id: string;
@@ -7,6 +8,7 @@ export class Growdever {
         private _nome: string,
         private _idade: number,
         private _cidade: string,
+        private _cpf: number,
         private _skills?: string[]
     ) {
         this._id = createUuid();
@@ -34,12 +36,16 @@ export class Growdever {
         this._skills = skills;
     }
 
+    public get cpf() {
+        return this._cpf;
+    }
+
     public toJson() {
         return {
             id: this._id,
             nome: this._nome,
             idade: this._idade,
-            // cidade: this._cidade,
+            cpf: cpfValidator.format(this._cpf.toString().padStart(11, "0")),
             skills: this.skills,
         };
     }

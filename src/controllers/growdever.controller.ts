@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { GrowdeverDatabase } from "../database/growdever.database";
-import { growdevers } from "../database/growdevers";
+import { RequestError } from "../errors/request.error";
+import { ServerError } from "../errors/server.error";
 import { Growdever } from "../models/growdever.model";
+import { SuccessResponse } from "../util/success.response";
 
 export class GrowdeverController {
     public list(req: Request, res: Response) {
@@ -25,10 +27,7 @@ export class GrowdeverController {
                 data: result,
             });
         } catch (error: any) {
-            return res.status(500).send({
-                ok: false,
-                message: error,
-            });
+            return ServerError.genericError(res, error);
         }
     }
 
@@ -40,10 +39,7 @@ export class GrowdeverController {
             const growdever = database.get(growdeverId);
 
             if (!growdever) {
-                return res.status(404).send({
-                    ok: false,
-                    message: "Growdever not found",
-                });
+                return RequestError.notFound(res, "Growdever");
             }
 
             res.status(200).send({
@@ -52,53 +48,26 @@ export class GrowdeverController {
                 data: growdever,
             });
         } catch (error: any) {
-            return res.status(500).send({
-                ok: false,
-                message: error,
-            });
+            return ServerError.genericError(res, error);
         }
     }
 
     public create(req: Request, res: Response) {
         try {
-            const { nome, idade, cidade, skills } = req.body;
+            const { nome, idade, cidade, cpf, skills } = req.body;
 
-            if (!nome) {
-                return res.status(400).send({
-                    ok: false,
-                    message: "Nome was not provided",
-                });
-            }
-
-            if (!idade) {
-                return res.status(400).send({
-                    ok: false,
-                    message: "Idade was not provided",
-                });
-            }
-
-            if (!cidade) {
-                return res.status(400).send({
-                    ok: false,
-                    message: "Bah! Deu ruim",
-                });
-            }
-
-            const growdever = new Growdever(nome, idade, cidade, skills);
+            const growdever = new Growdever(nome, idade, cidade, cpf, skills);
 
             const database = new GrowdeverDatabase();
             database.create(growdever);
 
-            res.status(201).send({
-                ok: true,
-                message: "Growdever successfully created",
-                data: growdever,
-            });
+            return SuccessResponse.created(
+                res,
+                "Growdever was successfully create",
+                growdever
+            );
         } catch (error: any) {
-            return res.status(500).send({
-                ok: false,
-                message: error.toString(),
-            });
+            return ServerError.genericError(res, error);
         }
     }
 
@@ -118,15 +87,18 @@ export class GrowdeverController {
 
             database.delete(growdeverIndex);
 
-            return res.status(200).send({
-                ok: true,
-                message: "Growdever successfully deleted",
-            });
+            // return res.status(200).send({
+            //     ok: true,
+            //     message: "Growdever successfully deleted",
+            // });
+
+            return SuccessResponse.ok(
+                res,
+                "Growdever was successfully deleted",
+                growdeverIndex
+            );
         } catch (error: any) {
-            return res.status(500).send({
-                ok: false,
-                message: error.toString(),
-            });
+            return ServerError.genericError(res, error);
         }
     }
 
@@ -154,10 +126,7 @@ export class GrowdeverController {
                 message: "Growdever successfully updated",
             });
         } catch (error: any) {
-            return res.status(500).send({
-                ok: false,
-                message: error.toString(),
-            });
+            return ServerError.genericError(res, error);
         }
     }
 }

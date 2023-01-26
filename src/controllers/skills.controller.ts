@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { GrowdeverDatabase } from "../database/growdever.database";
+import { RequestError } from "../errors/request.error";
 
 export class SkillsController {
     // http://localhost:3333/growdever/5bd700e3-88ea-453a-ba62-27633d4a1f8b/skill
@@ -54,20 +55,14 @@ export class SkillsController {
             const growdever = database.get(id);
 
             if (!growdever) {
-                return res.status(404).send({
-                    ok: false,
-                    message: "Growdever not found",
-                });
+                return RequestError.notFound(res, "Growdever");
             }
 
             const skillIndex = growdever.skills.findIndex(
                 (item) => item === skill
             );
             if (skillIndex < 0) {
-                return res.status(404).send({
-                    ok: false,
-                    message: "Skill not found",
-                });
+                return RequestError.notFound(res, "Skill");
             }
 
             growdever.skills.splice(skillIndex, 1);

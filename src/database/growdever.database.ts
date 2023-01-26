@@ -10,6 +10,10 @@ export class GrowdeverDatabase {
         return growdevers.find((growdever) => growdever.id === id);
     }
 
+    public getByCpf(cpf: number) {
+        return growdevers.find((growdever) => growdever.cpf === cpf);
+    }
+
     public getIndex(id: string) {
         return growdevers.findIndex((growdever) => growdever.id === id);
     }
