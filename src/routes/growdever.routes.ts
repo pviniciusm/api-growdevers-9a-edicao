@@ -19,7 +19,7 @@ export const growdeverRoutes = () => {
     const app = Router();
 
     // GET http://localhost:3333/growdever
-    app.get("/", middlewaresForMethodAndLog, new GrowdeverController().list);
+    app.get("/", new GrowdeverController().list);
 
     // GET http://localhost:3333/growdever/1234abc
     app.get(
