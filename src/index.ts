@@ -12,5 +12,5 @@ app.use(cors());
 app.use("/growdever", growdeverRoutes());
 
 app.listen(process.env.PORT, () => {
-    console.log(`API está rodando na porta ${process.env.PORT}!`);
+    console.log(`API está rodando na porta.... ${process.env.PORT}!`);
 });
