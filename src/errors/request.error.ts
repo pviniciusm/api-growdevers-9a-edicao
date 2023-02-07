@@ -14,4 +14,18 @@ export class RequestError {
             message: entity + " not found",
         });
     }
+
+    public static unauthorized(res: Response) {
+        return res.status(401).send({
+            ok: false,
+            message: "Access not authorized",
+        });
+    }
+
+    public static forbidden(res: Response) {
+        return res.status(403).send({
+            ok: false,
+            message: "Access not authorized",
+        });
+    }
 }

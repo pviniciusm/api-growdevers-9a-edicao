@@ -49,6 +49,13 @@ export const growdeverRoutes = () => {
     // PUT http://localhost:3333/growdever/abc-1234
     app.put("/:id", new GrowdeverController().update);
 
+    // POST http://localhost:3333/growdever/login
+    app.post(
+        "/login",
+        [GrowdeverValidatorMiddleware.validateLoginFields],
+        new GrowdeverController().login
+    );
+
     // POST http://localhost:3333/growdever/123abc/skill
     app.post("/:id/skill", new SkillsController().create);
 

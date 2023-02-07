@@ -25,4 +25,11 @@ export class GrowdeverDatabase {
     public delete(index: number) {
         growdevers.splice(index, 1);
     }
+
+    public getLogin(cpf: number, password: string) {
+        return growdevers.find(
+            (growdever) =>
+                growdever.cpf === cpf && growdever.password === password
+        );
+    }
 }

@@ -21,6 +21,8 @@ export class GrowdeverController {
 
             const result = growdevers.map((growdever) => growdever.toJson());
 
+            console.log(growdevers);
+
             res.status(200).send({
                 ok: true,
                 message: "Growdevers successfully listed",
@@ -54,9 +56,16 @@ export class GrowdeverController {
 
     public create(req: Request, res: Response) {
         try {
-            const { nome, idade, cidade, cpf, skills } = req.body;
+            const { nome, idade, cidade, cpf, password, skills } = req.body;
 
-            const growdever = new Growdever(nome, idade, cidade, cpf, skills);
+            const growdever = new Growdever(
+                nome,
+                idade,
+                cidade,
+                cpf,
+                password,
+                skills
+            );
 
             const database = new GrowdeverDatabase();
             database.create(growdever);
@@ -124,6 +133,32 @@ export class GrowdeverController {
             return res.status(200).send({
                 ok: true,
                 message: "Growdever successfully updated",
+            });
+        } catch (error: any) {
+            return ServerError.genericError(res, error);
+        }
+    }
+
+    public login(req: Request, res: Response) {
+        try {
+            const { cpf, password } = req.body;
+
+            const database = new GrowdeverDatabase();
+            let growdever = database.getByCpf(cpf);
+
+            if (!growdever) {
+                return RequestError.unauthorized(res);
+            }
+
+            if (growdever.password !== password) {
+                return RequestError.forbidden(res);
+            }
+
+            // to-do
+            // Criar um token de autenticação
+
+            return SuccessResponse.ok(res, "Login successfully done", {
+                id: growdever.id,
             });
         } catch (error: any) {
             return ServerError.genericError(res, error);

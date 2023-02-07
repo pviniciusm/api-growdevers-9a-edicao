@@ -9,9 +9,14 @@ export class Growdever {
         private _idade: number,
         private _cidade: string,
         private _cpf: number,
+        private _password: string,
         private _skills?: string[]
     ) {
         this._id = createUuid();
+    }
+
+    public get password() {
+        return this._password;
     }
 
     // getter
