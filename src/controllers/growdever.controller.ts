@@ -6,22 +6,22 @@ import { Growdever } from "../models/growdever.model";
 import { SuccessResponse } from "../util/success.response";
 
 export class GrowdeverController {
-    public list(req: Request, res: Response) {
+    public async list(req: Request, res: Response) {
         try {
             const { idade } = req.query;
 
             const database = new GrowdeverDatabase();
-            let growdevers = database.list();
+            let growdevers = await database.list(
+                idade ? Number(idade) : undefined
+            );
 
-            if (idade) {
-                growdevers = growdevers.filter(
-                    (growdever) => growdever.idade === Number(idade)
-                );
-            }
+            // if (idade) {
+            //     growdevers = growdevers.filter(
+            //         (growdever) => growdever.idade === Number(idade)
+            //     );
+            // }
 
             const result = growdevers.map((growdever) => growdever.toJson());
-
-            console.log(growdevers);
 
             res.status(200).send({
                 ok: true,
@@ -33,12 +33,12 @@ export class GrowdeverController {
         }
     }
 
-    public get(req: Request, res: Response) {
+    public async get(req: Request, res: Response) {
         try {
             const { growdeverId } = req.params;
 
             const database = new GrowdeverDatabase();
-            const growdever = database.get(growdeverId);
+            const growdever = await database.get(growdeverId);
 
             if (!growdever) {
                 return RequestError.notFound(res, "Growdever");
@@ -47,14 +47,14 @@ export class GrowdeverController {
             res.status(200).send({
                 ok: true,
                 message: "Growdever successfully obtained",
-                data: growdever,
+                data: growdever.toJson(),
             });
         } catch (error: any) {
             return ServerError.genericError(res, error);
         }
     }
 
-    public create(req: Request, res: Response) {
+    public async create(req: Request, res: Response) {
         try {
             const { nome, idade, cidade, cpf, password, skills } = req.body;
 
@@ -68,56 +68,24 @@ export class GrowdeverController {
             );
 
             const database = new GrowdeverDatabase();
-            database.create(growdever);
+            const result = await database.create(growdever);
 
             return SuccessResponse.created(
                 res,
                 "Growdever was successfully create",
-                growdever
+                result
             );
         } catch (error: any) {
             return ServerError.genericError(res, error);
         }
     }
 
-    public delete(req: Request, res: Response) {
+    public async delete(req: Request, res: Response) {
         try {
             const { id } = req.params;
 
             const database = new GrowdeverDatabase();
-            const growdeverIndex = database.getIndex(id);
-
-            if (growdeverIndex < 0) {
-                return res.status(404).send({
-                    ok: false,
-                    message: "Growdever not found",
-                });
-            }
-
-            database.delete(growdeverIndex);
-
-            // return res.status(200).send({
-            //     ok: true,
-            //     message: "Growdever successfully deleted",
-            // });
-
-            return SuccessResponse.ok(
-                res,
-                "Growdever was successfully deleted",
-                growdeverIndex
-            );
-        } catch (error: any) {
-            return ServerError.genericError(res, error);
-        }
-    }
-
-    public update(req: Request, res: Response) {
-        try {
-            const { id } = req.params;
-            const { idade } = req.body;
-
-            const database = new GrowdeverDatabase();
-            const growdever = database.get(id);
+            const growdever = await database.get(id);
 
             if (!growdever) {
                 return res.status(404).send({
@@ -126,13 +94,41 @@ export class GrowdeverController {
                 });
             }
 
-            if (idade) {
-                growdever.idade = idade;
+            await database.delete(growdever.id);
+
+            return SuccessResponse.ok(
+                res,
+                "Growdever was successfully deleted",
+                growdever
+            );
+        } catch (error: any) {
+            return ServerError.genericError(res, error);
+        }
+    }
+
+    public async update(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const { idade } = req.body;
+
+            const database = new GrowdeverDatabase();
+            const growdever = await database.get(id);
+
+            if (!growdever) {
+                return res.status(404).send({
+                    ok: false,
+                    message: "Growdever not found",
+                });
             }
+
+            growdever.idade = idade;
+
+            await database.update(growdever.id, growdever.idade);
 
             return res.status(200).send({
                 ok: true,
                 message: "Growdever successfully updated",
+                data: growdever,
             });
         } catch (error: any) {
             return ServerError.genericError(res, error);

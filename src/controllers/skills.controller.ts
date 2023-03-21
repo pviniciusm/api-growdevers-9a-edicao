@@ -4,7 +4,7 @@ import { RequestError } from "../errors/request.error";
 
 export class SkillsController {
     // http://localhost:3333/growdever/5bd700e3-88ea-453a-ba62-27633d4a1f8b/skill
-    public create(req: Request, res: Response) {
+    public async create(req: Request, res: Response) {
         try {
             const { id } = req.params;
             const { skills } = req.body;
@@ -17,7 +17,7 @@ export class SkillsController {
                 });
             }
 
-            const growdever = database.get(id);
+            const growdever = await database.get(id);
 
             if (!growdever) {
                 return res.status(404).send({
@@ -47,12 +47,12 @@ export class SkillsController {
     }
 
     // http://localhost:3333/growdever/5bd700e3-88ea-453a-ba62-27633d4a1f8b/skill/nodejs
-    public delete(req: Request, res: Response) {
+    public async delete(req: Request, res: Response) {
         try {
             const { id, skill } = req.params;
             const database = new GrowdeverDatabase();
 
-            const growdever = database.get(id);
+            const growdever = await database.get(id);
 
             if (!growdever) {
                 return RequestError.notFound(res, "Growdever");

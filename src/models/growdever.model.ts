@@ -45,6 +45,10 @@ export class Growdever {
         return this._cpf;
     }
 
+    public get nome() {
+        return this._nome;
+    }
+
     public toJson() {
         return {
             id: this._id,
@@ -53,5 +57,27 @@ export class Growdever {
             cpf: cpfValidator.format(this._cpf.toString().padStart(11, "0")),
             skills: this.skills,
         };
+    }
+
+    public static create(
+        id: string,
+        nome: string,
+        idade: number,
+        cidade: string,
+        cpf: number,
+        password: string,
+        skills?: string[]
+    ) {
+        const growdever = new Growdever(
+            nome,
+            idade,
+            cidade,
+            cpf,
+            password,
+            skills
+        );
+        growdever._id = id;
+
+        return growdever;
     }
 }
