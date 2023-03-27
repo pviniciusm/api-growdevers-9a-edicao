@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { GrowdeverDatabase } from "../database/growdever.database";
+import { GrowdeverDatabase } from "../database/repositories/growdever.database";
 import { RequestError } from "../errors/request.error";
 
 export class SkillsController {

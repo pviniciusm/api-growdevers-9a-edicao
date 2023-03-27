@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import * as dotenv from "dotenv";
 import { growdeverRoutes } from "./routes/growdever.routes";
-import { DatabaseConnection } from "./database/database.connection";
+import { DatabaseConnection } from "./database/config/database.connection";
+import "reflect-metadata";
 
 dotenv.config();
 

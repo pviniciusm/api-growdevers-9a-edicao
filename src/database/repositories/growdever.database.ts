@@ -1,18 +1,40 @@
-import { Growdever } from "../models/growdever.model";
-import { DatabaseConnection } from "./database.connection";
-import { growdevers } from "./growdevers";
+import { Growdever } from "../../models/growdever.model";
+import { DatabaseConnection } from "../config/database.connection";
+import { GrowdeverEntity } from "../entities/growdever.entity";
+import { growdevers } from "../growdevers";
 
 export class GrowdeverDatabase {
+    // private _repository =
+    //     DatabaseConnection.connection.getRepository(GrowdeverEntity);
+
     public async list(idade?: number): Promise<Growdever[]> {
         let query = "select * from growdevers.growdever";
+        const result: any[] = await DatabaseConnection.connection.query(query);
 
-        if (idade) {
-            query += ` where idade = ${idade}`;
-        }
+        // if (idade) {
+        //     query += ` where idade = ${idade}`;
+        // }
 
-        const result = await DatabaseConnection.connection.query(query);
+        return result.map((row) => this.mapToModel(row));
+    }
 
-        return result.rows.map((row) => this.mapToModel(row));
+    public async listEntity(): Promise<Growdever[]> {
+        const connection = DatabaseConnection.connection;
+        const repository = connection.getRepository(GrowdeverEntity);
+
+        const result = await repository.find();
+        return result.map((growdever: any) => this.mapEntityToModel(growdever));
+    }
+
+    private mapEntityToModel(entity: GrowdeverEntity): Growdever {
+        return Growdever.create(
+            entity.id.trim(),
+            entity.nome,
+            entity.idade,
+            "indefinido",
+            entity.cpf,
+            "indefinido"
+        );
     }
 
     private mapToModel(row: any): Growdever {
@@ -31,11 +53,11 @@ export class GrowdeverDatabase {
             `select * from growdevers.growdever where id = '${id}'`
         );
 
-        if (result.rows.length === 0) {
+        if (result.length === 0) {
             return null;
         }
 
-        const row = result.rows[0];
+        const row = result[0];
 
         return this.mapToModel(row);
     }

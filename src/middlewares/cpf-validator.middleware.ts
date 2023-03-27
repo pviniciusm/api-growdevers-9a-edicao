@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { cpf as cpfValidator } from "cpf-cnpj-validator";
-import { GrowdeverDatabase } from "../database/growdever.database";
+import { GrowdeverDatabase } from "../database/repositories/growdever.database";
 import { ServerError } from "../errors/server.error";
 
 export class CpfValidatorMiddleware {

@@ -54,6 +54,7 @@ export class Growdever {
             id: this._id,
             nome: this._nome,
             idade: this._idade,
+            cidade: this._cidade,
             cpf: cpfValidator.format(this._cpf.toString().padStart(11, "0")),
             skills: this.skills,
         };

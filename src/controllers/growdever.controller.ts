@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { GrowdeverDatabase } from "../database/growdever.database";
+import { GrowdeverDatabase } from "../database/repositories/growdever.database";
 import { RequestError } from "../errors/request.error";
 import { ServerError } from "../errors/server.error";
 import { Growdever } from "../models/growdever.model";
@@ -11,9 +11,11 @@ export class GrowdeverController {
             const { idade } = req.query;
 
             const database = new GrowdeverDatabase();
-            let growdevers = await database.list(
-                idade ? Number(idade) : undefined
-            );
+            // let growdevers = await database.list(
+            //     idade ? Number(idade) : undefined
+            // );
+
+            let growdevers = await database.listEntity();
 
             // if (idade) {
             //     growdevers = growdevers.filter(
