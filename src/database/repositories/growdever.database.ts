@@ -2,64 +2,53 @@ import { Growdever } from "../../models/growdever.model";
 import { DatabaseConnection } from "../config/database.connection";
 import { GrowdeverEntity } from "../entities/growdever.entity";
 import { growdevers } from "../growdevers";
+import { SkillDatabase } from "./skill.database";
 
 export class GrowdeverDatabase {
-    // private _repository =
-    //     DatabaseConnection.connection.getRepository(GrowdeverEntity);
+    private repository =
+        DatabaseConnection.connection.getRepository(GrowdeverEntity);
 
     public async list(idade?: number): Promise<Growdever[]> {
-        let query = "select * from growdevers.growdever";
-        const result: any[] = await DatabaseConnection.connection.query(query);
+        const result = await GrowdeverEntity.find({
+            where: {
+                idade,
+            },
+            relations: ["skills"],
+        });
 
-        // if (idade) {
-        //     query += ` where idade = ${idade}`;
-        // }
+        console.log(result);
 
-        return result.map((row) => this.mapToModel(row));
-    }
-
-    public async listEntity(): Promise<Growdever[]> {
-        const connection = DatabaseConnection.connection;
-        const repository = connection.getRepository(GrowdeverEntity);
-
-        const result = await repository.find();
         return result.map((growdever: any) => this.mapEntityToModel(growdever));
     }
 
     private mapEntityToModel(entity: GrowdeverEntity): Growdever {
+        const skillsEntity = entity.skills ?? [];
+
+        const skills = skillsEntity.map((item) =>
+            SkillDatabase.mapEntityToModel(item)
+        );
+
         return Growdever.create(
             entity.id.trim(),
             entity.nome,
             entity.idade,
             "indefinido",
             entity.cpf,
-            "indefinido"
-        );
-    }
-
-    private mapToModel(row: any): Growdever {
-        return Growdever.create(
-            row.id.trim(),
-            row.nome,
-            row.idade,
-            row.cidade,
-            row.cpf,
-            row.password
+            "indefinido",
+            skills
         );
     }
 
     public async get(id: string) {
-        const result = await DatabaseConnection.connection.query(
-            `select * from growdevers.growdever where id = '${id}'`
-        );
+        const result = await this.repository.findOneBy({
+            id,
+        });
 
-        if (result.length === 0) {
+        if (result === null) {
             return null;
         }
 
-        const row = result[0];
-
-        return this.mapToModel(row);
+        return this.mapEntityToModel(result);
     }
 
     public getByCpf(cpf: number) {
@@ -71,23 +60,18 @@ export class GrowdeverDatabase {
     // }
 
     public async create(growdever: Growdever) {
-        let query = `insert into growdevers.growdever `;
-        query += `(nome, cpf, idade, nota, ind_ativo, dt_nascimento) `;
-        query += `values `;
-        query += `('${growdever.nome}', ${growdever.cpf}, ${growdever.idade}, 8, true, '1980-11-20') `;
+        const growdeverEntity = GrowdeverEntity.create({
+            cpf: growdever.cpf,
+            id: growdever.id,
+            idade: growdever.idade,
+            indAtivo: true,
+            nome: growdever.nome,
+            nota: 10,
+        });
 
-        await DatabaseConnection.connection.query(query);
+        const result = await this.repository.save(growdeverEntity);
 
-        const result = await DatabaseConnection.connection.query(
-            `select * from growdevers.growdever where cpf = '${growdever.cpf}'`
-        );
-        if (result.rows.length === 0) {
-            return null;
-        }
-
-        const row = result.rows[0];
-
-        return this.mapToModel(row);
+        return this.mapEntityToModel(result);
     }
 
     public async createWithId(growdever: Growdever) {
@@ -99,10 +83,26 @@ export class GrowdeverDatabase {
         await DatabaseConnection.connection.query(query);
     }
 
-    public async delete(id: string) {
-        await DatabaseConnection.connection.query(
-            `delete from growdevers.growdever where id = '${id}'`
-        );
+    public async delete(id: string): Promise<number> {
+        const result = await this.repository.delete({
+            id,
+        });
+
+        return result.affected ?? 0;
+    }
+
+    public async deleteWithRemove(id: string): Promise<number> {
+        const growdeverEntity = await this.repository.findOneBy({
+            id,
+        });
+
+        if (!growdeverEntity) {
+            return 0;
+        }
+
+        await growdeverEntity.remove();
+
+        return 1;
     }
 
     public getLogin(cpf: number, password: string) {
@@ -112,11 +112,32 @@ export class GrowdeverDatabase {
         );
     }
 
-    public async update(id: string, idade: number) {
-        let query = `update growdevers.growdever `;
-        query += `set idade = ${idade}, dthr_atualizacao = current_timestamp `;
-        query += `where id = '${id}' `;
+    public async update(id: string, idade: number): Promise<number> {
+        const result = await this.repository.update(
+            {
+                id,
+            },
+            {
+                idade,
+                dthrAtualizacao: new Date(),
+            }
+        );
 
-        await DatabaseConnection.connection.query(query);
+        return result.affected ?? 0;
+    }
+
+    public async updateWithSave(id: string, idade: number): Promise<number> {
+        const growdeverEntity = await this.repository.findOneBy({
+            id,
+        });
+
+        if (!growdeverEntity) {
+            return 0;
+        }
+
+        growdeverEntity.idade = idade;
+        await this.repository.save(growdeverEntity);
+
+        return 1;
     }
 }

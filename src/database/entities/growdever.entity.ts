@@ -4,12 +4,15 @@ import {
     PrimaryGeneratedColumn,
     PrimaryColumn,
     BaseEntity,
+    BeforeUpdate,
+    OneToMany,
 } from "typeorm";
+import { SkillEntity } from "./skill.entity";
 
 @Entity({
     name: "growdever",
 })
-export class GrowdeverEntity {
+export class GrowdeverEntity extends BaseEntity {
     @PrimaryColumn()
     id: string;
 
@@ -19,7 +22,7 @@ export class GrowdeverEntity {
     nome: string;
 
     @Column({
-        type: "int4",
+        type: "int8",
     })
     cpf: number;
 
@@ -36,4 +39,18 @@ export class GrowdeverEntity {
         name: "ind_ativo",
     })
     indAtivo: boolean;
+
+    @Column({
+        type: "timestamp",
+        name: "dthr_atualizacao",
+    })
+    dthrAtualizacao: Date;
+
+    @OneToMany(() => SkillEntity, (skill) => skill.growdever)
+    skills: SkillEntity[];
+
+    @BeforeUpdate()
+    beforeUpdate() {
+        this.dthrAtualizacao = new Date();
+    }
 }

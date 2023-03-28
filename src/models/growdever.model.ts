@@ -1,5 +1,6 @@
 import { v4 as createUuid } from "uuid";
 import { cpf as cpfValidator } from "cpf-cnpj-validator";
+import { Skill } from "./skill.model";
 
 export class Growdever {
     private _id: string;
@@ -10,7 +11,7 @@ export class Growdever {
         private _cidade: string,
         private _cpf: number,
         private _password: string,
-        private _skills?: string[]
+        private _skills?: Skill[]
     ) {
         this._id = createUuid();
     }
@@ -37,7 +38,7 @@ export class Growdever {
         return this._skills ?? [];
     }
 
-    public set skills(skills: string[]) {
+    public set skills(skills: Skill[]) {
         this._skills = skills;
     }
 
@@ -67,7 +68,7 @@ export class Growdever {
         cidade: string,
         cpf: number,
         password: string,
-        skills?: string[]
+        skills?: Skill[]
     ) {
         const growdever = new Growdever(
             nome,

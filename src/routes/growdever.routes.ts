@@ -60,7 +60,10 @@ export const growdeverRoutes = () => {
     app.post("/:id/skill", new SkillsController().create);
 
     // DELETE http://localhost:3333/growdever/123abc/skill/nodejs
-    app.delete("/:id/skill/:skill", new SkillsController().delete);
+    // app.delete("/:id/skill/:skill", new SkillsController().delete);
+
+    // POST http://localhost:3333/growdever/123abc/skill
+    app.get("/:id/skill", new SkillsController().list);
 
     return app;
 };

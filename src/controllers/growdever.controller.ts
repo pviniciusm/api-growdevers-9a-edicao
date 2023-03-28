@@ -11,17 +11,9 @@ export class GrowdeverController {
             const { idade } = req.query;
 
             const database = new GrowdeverDatabase();
-            // let growdevers = await database.list(
-            //     idade ? Number(idade) : undefined
-            // );
-
-            let growdevers = await database.listEntity();
-
-            // if (idade) {
-            //     growdevers = growdevers.filter(
-            //         (growdever) => growdever.idade === Number(idade)
-            //     );
-            // }
+            let growdevers = await database.list(
+                idade ? Number(idade) : undefined
+            );
 
             const result = growdevers.map((growdever) => growdever.toJson());
 
@@ -75,7 +67,7 @@ export class GrowdeverController {
             return SuccessResponse.created(
                 res,
                 "Growdever was successfully create",
-                result
+                result.toJson()
             );
         } catch (error: any) {
             return ServerError.genericError(res, error);
@@ -87,21 +79,19 @@ export class GrowdeverController {
             const { id } = req.params;
 
             const database = new GrowdeverDatabase();
-            const growdever = await database.get(id);
+            const result = await database.delete(id);
 
-            if (!growdever) {
+            if (result === 0) {
                 return res.status(404).send({
                     ok: false,
                     message: "Growdever not found",
                 });
             }
 
-            await database.delete(growdever.id);
-
             return SuccessResponse.ok(
                 res,
                 "Growdever was successfully deleted",
-                growdever
+                id
             );
         } catch (error: any) {
             return ServerError.genericError(res, error);
@@ -114,23 +104,19 @@ export class GrowdeverController {
             const { idade } = req.body;
 
             const database = new GrowdeverDatabase();
-            const growdever = await database.get(id);
+            const result = await database.updateWithSave(id, idade);
 
-            if (!growdever) {
+            if (result === 0) {
                 return res.status(404).send({
                     ok: false,
                     message: "Growdever not found",
                 });
             }
 
-            growdever.idade = idade;
-
-            await database.update(growdever.id, growdever.idade);
-
             return res.status(200).send({
                 ok: true,
                 message: "Growdever successfully updated",
-                data: growdever,
+                data: id,
             });
         } catch (error: any) {
             return ServerError.genericError(res, error);
