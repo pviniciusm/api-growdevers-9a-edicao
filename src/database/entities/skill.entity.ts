@@ -1,4 +1,13 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    PrimaryColumn,
+} from "typeorm";
+import { CategoriaEntity } from "./categoria.entity";
 import { GrowdeverEntity } from "./growdever.entity";
 
 @Entity("skill")
@@ -22,6 +31,16 @@ export class SkillEntity {
         name: "id_growdever",
     })
     growdever: GrowdeverEntity;
-}
 
-// Growdever  - 1 ---- N - Skill
+    @ManyToMany(() => CategoriaEntity)
+    @JoinTable({
+        name: "skill_categoria",
+        inverseJoinColumn: {
+            name: "id_categoria",
+        },
+        joinColumn: {
+            name: "id_skill",
+        },
+    })
+    categorias: CategoriaEntity[];
+}

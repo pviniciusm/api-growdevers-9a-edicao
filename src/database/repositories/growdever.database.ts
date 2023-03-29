@@ -13,7 +13,7 @@ export class GrowdeverDatabase {
             where: {
                 idade,
             },
-            relations: ["skills"],
+            relations: ["endereco"],
         });
 
         console.log(result);
@@ -28,11 +28,17 @@ export class GrowdeverDatabase {
             SkillDatabase.mapEntityToModel(item)
         );
 
+        let cidade = "";
+
+        if (entity.endereco != null) {
+            cidade = entity.endereco.cidade;
+        }
+
         return Growdever.create(
             entity.id.trim(),
             entity.nome,
             entity.idade,
-            "indefinido",
+            cidade,
             entity.cpf,
             "indefinido",
             skills
@@ -40,8 +46,10 @@ export class GrowdeverDatabase {
     }
 
     public async get(id: string) {
-        const result = await this.repository.findOneBy({
-            id,
+        const result = await this.repository.findOne({
+            where: {
+                id,
+            },
         });
 
         if (result === null) {

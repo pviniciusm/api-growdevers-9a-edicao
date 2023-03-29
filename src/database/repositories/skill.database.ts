@@ -8,12 +8,11 @@ export class SkillDatabase {
 
     public async list() {
         const result = await this.repository.find({
-            relations: ["growdever"],
+            relations: ["categorias"],
         });
 
-        console.log(result);
-
-        return result.map((item) => SkillDatabase.mapEntityToModel(item));
+        // return result.map((item) => SkillDatabase.mapEntityToModel(item));
+        return result;
     }
 
     public async create(id: string, skill: Skill) {

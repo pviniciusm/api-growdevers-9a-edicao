@@ -6,7 +6,9 @@ import {
     BaseEntity,
     BeforeUpdate,
     OneToMany,
+    OneToOne,
 } from "typeorm";
+import { EnderecoEntity } from "./endereco.entity";
 import { SkillEntity } from "./skill.entity";
 
 @Entity({
@@ -46,8 +48,13 @@ export class GrowdeverEntity extends BaseEntity {
     })
     dthrAtualizacao: Date;
 
-    @OneToMany(() => SkillEntity, (skill) => skill.growdever)
+    @OneToMany(() => SkillEntity, (skill) => skill.growdever, {
+        eager: true,
+    })
     skills: SkillEntity[];
+
+    @OneToOne(() => EnderecoEntity, (endereco) => endereco.growdever)
+    endereco: EnderecoEntity;
 
     @BeforeUpdate()
     beforeUpdate() {
