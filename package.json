@@ -8,7 +8,11 @@
         "dev": "ts-node-dev --respawn ./src/index.ts",
         "dev:debug": "ts-node-dev --inspect --respawn ./src/index.ts",
         "postinstall": "tsc",
-        "typeorm": "typeorm-ts-node-commonjs"
+        "typeorm": "typeorm-ts-node-commonjs",
+        "migration:generate": "npm run typeorm migration:generate -- -d ./src/database/config/database.config.ts",
+        "migration:create": "npm run typeorm migration:create",
+        "migration:run": "npm run typeorm migration:run -- -d ./src/database/config/database.config.ts",
+        "migration:revert": "npm run typeorm migration:revert -- -d ./src/database/config/database.config.ts"
     },
     "keywords": [],
     "author": "",

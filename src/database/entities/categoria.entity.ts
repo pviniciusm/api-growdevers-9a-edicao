@@ -7,4 +7,10 @@ export class CategoriaEntity {
 
     @Column()
     nome: string;
+
+    @Column({
+        type: "timestamp",
+        name: "dthr_criacao",
+    })
+    dthrCriacao: Date;
 }

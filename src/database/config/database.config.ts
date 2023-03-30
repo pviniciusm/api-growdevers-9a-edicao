@@ -15,5 +15,6 @@ export default new DataSource({
     },
     synchronize: false,
     entities: ["src/database/entities/**/*.ts"],
-    schema: "growdevers",
+    migrations: ["src/database/migrations/**/*.ts"],
+    schema: "aula",
 });
