@@ -1,5 +1,5 @@
 import { Skill } from "../../models/skill.model";
-import { DatabaseConnection } from "../config/database.connection";
+import { DatabaseConnection } from "../../main/database/typeorm.connection";
 import { SkillEntity } from "../entities/skill.entity";
 
 export class SkillDatabase {

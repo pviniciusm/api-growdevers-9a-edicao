@@ -1,5 +1,5 @@
 import { Growdever } from "../../models/growdever.model";
-import { DatabaseConnection } from "../config/database.connection";
+import { DatabaseConnection } from "../../main/database/typeorm.connection";
 import { GrowdeverEntity } from "../entities/growdever.entity";
 import { growdevers } from "../growdevers";
 import { SkillDatabase } from "./skill.database";
