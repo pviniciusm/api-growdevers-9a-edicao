@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { GrowdeverController } from "../controllers/growdever.controller";
-import { SkillsController } from "../controllers/skills.controller";
-import { CpfValidatorMiddleware } from "../middlewares/cpf-validator.middleware";
-import { GrowdeverValidatorMiddleware } from "../middlewares/growdever-validator.middleware";
+import { SkillsController } from "../../skill/controllers/skills.controller";
+import { CpfValidatorMiddleware } from "../../../shared/middlewares/cpf-validator.middleware";
+import { GrowdeverValidatorMiddleware } from "../../../shared/middlewares/growdever-validator.middleware";
 
 import {
     logMethodMiddleware,
     LogMiddleware,
-} from "../middlewares/log.middleware";
+} from "../../../shared/middlewares/log.middleware";
 
 const middlewaresForMethodAndLog = [
     logMethodMiddleware,

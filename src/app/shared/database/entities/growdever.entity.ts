@@ -7,6 +7,8 @@ import {
     BeforeUpdate,
     OneToMany,
     OneToOne,
+    CreateDateColumn,
+    UpdateDateColumn,
 } from "typeorm";
 import { EnderecoEntity } from "./endereco.entity";
 import { SkillEntity } from "./skill.entity";
@@ -42,8 +44,7 @@ export class GrowdeverEntity extends BaseEntity {
     })
     indAtivo: boolean;
 
-    @Column({
-        type: "timestamp",
+    @UpdateDateColumn({
         name: "dthr_atualizacao",
     })
     dthrAtualizacao: Date;

@@ -1,10 +1,9 @@
-import { Growdever } from "../../models/growdever.model";
-import { DatabaseConnection } from "../../main/database/typeorm.connection";
-import { GrowdeverEntity } from "../entities/growdever.entity";
-import { growdevers } from "../growdevers";
-import { SkillDatabase } from "./skill.database";
+import { DatabaseConnection } from "../../../../main/database/typeorm.connection";
+import { GrowdeverEntity } from "../../../shared/database/entities/growdever.entity";
+import { Growdever } from "../../../models/growdever.model";
+import { SkillRepository } from "../../skill/repositories/skill.repository";
 
-export class GrowdeverDatabase {
+export class GrowdeverRepository {
     private repository =
         DatabaseConnection.connection.getRepository(GrowdeverEntity);
 
@@ -25,7 +24,7 @@ export class GrowdeverDatabase {
         const skillsEntity = entity.skills ?? [];
 
         const skills = skillsEntity.map((item) =>
-            SkillDatabase.mapEntityToModel(item)
+            SkillRepository.mapEntityToModel(item)
         );
 
         let cidade = "";
@@ -59,13 +58,19 @@ export class GrowdeverDatabase {
         return this.mapEntityToModel(result);
     }
 
-    public getByCpf(cpf: number) {
-        return growdevers.find((growdever) => growdever.cpf === cpf);
-    }
+    public async getByCpf(cpf: number) {
+        const result = await this.repository.findOne({
+            where: {
+                cpf,
+            },
+        });
 
-    // public getIndex(id: string) {
-    //     return growdevers.findIndex((growdever) => growdever.id === id);
-    // }
+        if (result === null) {
+            return null;
+        }
+
+        return this.mapEntityToModel(result);
+    }
 
     public async create(growdever: Growdever) {
         const growdeverEntity = GrowdeverEntity.create({
@@ -111,13 +116,6 @@ export class GrowdeverDatabase {
         await growdeverEntity.remove();
 
         return 1;
-    }
-
-    public getLogin(cpf: number, password: string) {
-        return growdevers.find(
-            (growdever) =>
-                growdever.cpf === cpf && growdever.password === password
-        );
     }
 
     public async update(id: string, idade: number): Promise<number> {

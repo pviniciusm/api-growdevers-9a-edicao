@@ -1,8 +1,8 @@
-import { Skill } from "../../models/skill.model";
-import { DatabaseConnection } from "../../main/database/typeorm.connection";
-import { SkillEntity } from "../entities/skill.entity";
+import { DatabaseConnection } from "../../../../main/database/typeorm.connection";
+import { Skill } from "../../../models/skill.model";
+import { SkillEntity } from "../../../shared/database/entities/skill.entity";
 
-export class SkillDatabase {
+export class SkillRepository {
     private repository =
         DatabaseConnection.connection.getRepository(SkillEntity);
 
@@ -11,7 +11,6 @@ export class SkillDatabase {
             relations: ["categorias"],
         });
 
-        // return result.map((item) => SkillDatabase.mapEntityToModel(item));
         return result;
     }
 
@@ -26,7 +25,7 @@ export class SkillDatabase {
         const result = await this.repository.save(skillEntity);
         console.log(result);
 
-        return SkillDatabase.mapEntityToModel(result);
+        return SkillRepository.mapEntityToModel(result);
     }
 
     public static mapEntityToModel(entity: SkillEntity): Skill {

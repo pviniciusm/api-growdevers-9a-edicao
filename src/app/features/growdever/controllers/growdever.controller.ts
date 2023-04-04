@@ -1,16 +1,16 @@
 import { Request, Response } from "express";
-import { GrowdeverDatabase } from "../database/repositories/growdever.database";
-import { RequestError } from "../errors/request.error";
-import { ServerError } from "../errors/server.error";
-import { Growdever } from "../models/growdever.model";
-import { SuccessResponse } from "../util/success.response";
+import { RequestError } from "../../../shared/errors/request.error";
+import { ServerError } from "../../../shared/errors/server.error";
+import { SuccessResponse } from "../../../shared/util/success.response";
+import { Growdever } from "../../../models/growdever.model";
+import { GrowdeverRepository } from "../repositories/growdever.repository";
 
 export class GrowdeverController {
     public async list(req: Request, res: Response) {
         try {
             const { idade } = req.query;
 
-            const database = new GrowdeverDatabase();
+            const database = new GrowdeverRepository();
             let growdevers = await database.list(
                 idade ? Number(idade) : undefined
             );
@@ -31,7 +31,7 @@ export class GrowdeverController {
         try {
             const { growdeverId } = req.params;
 
-            const database = new GrowdeverDatabase();
+            const database = new GrowdeverRepository();
             const growdever = await database.get(growdeverId);
 
             if (!growdever) {
@@ -61,7 +61,7 @@ export class GrowdeverController {
                 skills
             );
 
-            const database = new GrowdeverDatabase();
+            const database = new GrowdeverRepository();
             const result = await database.create(growdever);
 
             return SuccessResponse.created(
@@ -78,7 +78,7 @@ export class GrowdeverController {
         try {
             const { id } = req.params;
 
-            const database = new GrowdeverDatabase();
+            const database = new GrowdeverRepository();
             const result = await database.delete(id);
 
             if (result === 0) {
@@ -103,7 +103,7 @@ export class GrowdeverController {
             const { id } = req.params;
             const { idade } = req.body;
 
-            const database = new GrowdeverDatabase();
+            const database = new GrowdeverRepository();
             const result = await database.updateWithSave(id, idade);
 
             if (result === 0) {
@@ -123,12 +123,12 @@ export class GrowdeverController {
         }
     }
 
-    public login(req: Request, res: Response) {
+    public async login(req: Request, res: Response) {
         try {
             const { cpf, password } = req.body;
 
-            const database = new GrowdeverDatabase();
-            let growdever = database.getByCpf(cpf);
+            const database = new GrowdeverRepository();
+            let growdever = await database.getByCpf(cpf);
 
             if (!growdever) {
                 return RequestError.unauthorized(res);

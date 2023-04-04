@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { cpf as cpfValidator } from "cpf-cnpj-validator";
-import { GrowdeverDatabase } from "../database/repositories/growdever.database";
 import { ServerError } from "../errors/server.error";
+import { GrowdeverRepository } from "../../features/growdever/repositories/growdever.repository";
 
 export class CpfValidatorMiddleware {
     public static cpfValidMiddleware(
@@ -38,7 +38,7 @@ export class CpfValidatorMiddleware {
         }
     }
 
-    public static cpfAlreadyExists(
+    public static async cpfAlreadyExists(
         req: Request,
         res: Response,
         next: NextFunction
@@ -46,8 +46,8 @@ export class CpfValidatorMiddleware {
         try {
             const { cpf } = req.body;
 
-            const database = new GrowdeverDatabase();
-            const growdever = database.getByCpf(cpf);
+            const database = new GrowdeverRepository();
+            const growdever = await database.getByCpf(cpf);
 
             if (growdever) {
                 return res.status(400).send({

@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
 
 @Entity("categoria")
 export class CategoriaEntity {
@@ -8,8 +8,7 @@ export class CategoriaEntity {
     @Column()
     nome: string;
 
-    @Column({
-        type: "timestamp",
+    @CreateDateColumn({
         name: "dthr_criacao",
     })
     dthrCriacao: Date;

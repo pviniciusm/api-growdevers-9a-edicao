@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { GrowdeverDatabase } from "../database/repositories/growdever.database";
-import { SkillDatabase } from "../database/repositories/skill.database";
-import { RequestError } from "../errors/request.error";
-import { Skill } from "../models/skill.model";
+import { RequestError } from "../../../shared/errors/request.error";
+import { GrowdeverRepository } from "../../growdever/repositories/growdever.repository";
+import { SkillRepository } from "../repositories/skill.repository";
+import { Skill } from "../../../models/skill.model";
 
 export class SkillsController {
     // http://localhost:3333/growdever/5bd700e3-88ea-453a-ba62-27633d4a1f8b/skill
@@ -25,7 +25,7 @@ export class SkillsController {
                 });
             }
 
-            const growdeverDatabase = new GrowdeverDatabase();
+            const growdeverDatabase = new GrowdeverRepository();
             const growdever = await growdeverDatabase.get(id);
 
             if (!growdever) {
@@ -35,7 +35,7 @@ export class SkillsController {
                 });
             }
 
-            const database = new SkillDatabase();
+            const database = new SkillRepository();
             const result = await database.create(
                 id,
                 new Skill(nome, arquivada)
@@ -56,7 +56,7 @@ export class SkillsController {
 
     public async list(req: Request, res: Response) {
         try {
-            const database = new SkillDatabase();
+            const database = new SkillRepository();
             const result = await database.list();
 
             return res.status(200).send({
