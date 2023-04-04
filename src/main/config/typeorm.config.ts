@@ -1,20 +1,18 @@
 import { DataSource } from "typeorm";
-
-import * as dotenv from "dotenv";
-dotenv.config();
+import { databaseEnv } from "../../app/envs/database.env";
 
 export default new DataSource({
     type: "postgres",
     port: 5432,
-    host: process.env.DB_HOST,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
+    host: databaseEnv.host,
+    username: databaseEnv.username,
+    password: databaseEnv.password,
+    database: databaseEnv.database,
     ssl: {
         rejectUnauthorized: false,
     },
     synchronize: false,
-    entities: ["src/database/entities/**/*.ts"],
-    migrations: ["src/database/migrations/**/*.ts"],
+    entities: ["src/app/shared/database/entities/**/*.ts"],
+    migrations: ["src/app/shared/database/migrations/**/*.ts"],
     schema: "aula",
 });
