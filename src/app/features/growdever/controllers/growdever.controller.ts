@@ -4,6 +4,7 @@ import { ServerError } from "../../../shared/errors/server.error";
 import { SuccessResponse } from "../../../shared/util/success.response";
 import { Growdever } from "../../../models/growdever.model";
 import { GrowdeverRepository } from "../repositories/growdever.repository";
+import { CreateGrowdeverUsecase } from "../usecases/create-growdever.usecase";
 
 export class GrowdeverController {
     public async list(req: Request, res: Response) {
@@ -50,25 +51,21 @@ export class GrowdeverController {
 
     public async create(req: Request, res: Response) {
         try {
-            const { nome, idade, cidade, cpf, password, skills } = req.body;
+            const { nome, idade, cidade, cpf, password } = req.body;
 
-            const growdever = new Growdever(
+            const result = await new CreateGrowdeverUsecase().execute({
                 nome,
                 idade,
                 cidade,
                 cpf,
                 password,
-                skills
-            );
+            });
 
-            const database = new GrowdeverRepository();
-            const result = await database.create(growdever);
-
-            return SuccessResponse.created(
-                res,
-                "Growdever was successfully create",
-                result.toJson()
-            );
+            return res.status(result.code).send({
+                ok: result.ok,
+                message: result.message,
+                data: result.data,
+            });
         } catch (error: any) {
             return ServerError.genericError(res, error);
         }
