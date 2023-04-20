@@ -5,24 +5,19 @@ import { SuccessResponse } from "../../../shared/util/success.response";
 import { Growdever } from "../../../models/growdever.model";
 import { GrowdeverRepository } from "../repositories/growdever.repository";
 import { CreateGrowdeverUsecase } from "../usecases/create-growdever.usecase";
+import { DeleteGrowdeverUsecase } from "../usecases/delete-growdever.usecase";
+import { ListGrowdeversUsecase } from "../usecases/list-growdevers.usecase";
 
 export class GrowdeverController {
     public async list(req: Request, res: Response) {
         try {
             const { idade } = req.query;
 
-            const database = new GrowdeverRepository();
-            let growdevers = await database.list(
-                idade ? Number(idade) : undefined
-            );
-
-            const result = growdevers.map((growdever) => growdever.toJson());
-
-            res.status(200).send({
-                ok: true,
-                message: "Growdevers successfully listed",
-                data: result,
+            const result = await new ListGrowdeversUsecase().execute({
+                idade: idade ? Number(idade) : undefined,
             });
+
+            return res.status(result.code).send(result);
         } catch (error: any) {
             return ServerError.genericError(res, error);
         }
@@ -61,11 +56,7 @@ export class GrowdeverController {
                 password,
             });
 
-            return res.status(result.code).send({
-                ok: result.ok,
-                message: result.message,
-                data: result.data,
-            });
+            return res.status(result.code).send(result);
         } catch (error: any) {
             return ServerError.genericError(res, error);
         }
@@ -75,21 +66,10 @@ export class GrowdeverController {
         try {
             const { id } = req.params;
 
-            const database = new GrowdeverRepository();
-            const result = await database.delete(id);
+            const usecase = new DeleteGrowdeverUsecase();
+            const result = await usecase.execute(id);
 
-            if (result === 0) {
-                return res.status(404).send({
-                    ok: false,
-                    message: "Growdever not found",
-                });
-            }
-
-            return SuccessResponse.ok(
-                res,
-                "Growdever was successfully deleted",
-                id
-            );
+            return res.status(result.code).send(result);
         } catch (error: any) {
             return ServerError.genericError(res, error);
         }

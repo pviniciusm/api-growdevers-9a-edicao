@@ -1,4 +1,5 @@
 import { Growdever } from "../../../models/growdever.model";
+import { CacheRepository } from "../../../shared/database/repositories/cache.repository";
 import { Return } from "../../../shared/util/usecase.return";
 import { GrowdeverRepository } from "../repositories/growdever.repository";
 
@@ -12,31 +13,18 @@ interface CreateGrowdeverParams {
 
 export class CreateGrowdeverUsecase {
     public async execute(data: CreateGrowdeverParams): Promise<Return> {
-        let erros: string[] = [];
-
         if (data.idade < 18 || data.idade > 99) {
-            // return {
-            //     ok: false,
-            //     message: "Idade is invalid",
-            //     code: 400,
-            // };
-            erros.push("Idade is invalid");
+            return {
+                ok: false,
+                message: "Idade is invalid",
+                code: 400,
+            };
         }
 
         if (data.nome.length < 6) {
-            // return {
-            //     ok: false,
-            //     message: "Nome must be greater than 6 characters",
-            //     code: 400,
-            // };
-
-            erros.push("Nome must be greater than 6 characters");
-        }
-
-        if (erros.length > 0) {
             return {
                 ok: false,
-                message: `Os seguintes erros aconteceram: ${erros.join(", ")}`,
+                message: "Nome must be greater than 6 characters",
                 code: 400,
             };
         }
@@ -51,6 +39,13 @@ export class CreateGrowdeverUsecase {
 
         const database = new GrowdeverRepository();
         const result = await database.create(growdever);
+
+        // const listGrowdever = await database.list();
+        // const resultList = listGrowdever.map((growdever) => growdever.toJson());
+
+        const cacheRepository = new CacheRepository();
+        await cacheRepository.delete("growdevers");
+        // await cacheRepository.set("growdevers", resultList);
 
         return {
             ok: true,
