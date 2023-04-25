@@ -29,23 +29,13 @@ export class CreateGrowdeverUsecase {
             };
         }
 
-        const growdever = new Growdever(
-            data.nome,
-            data.idade,
-            data.cidade,
-            data.cpf,
-            data.password
-        );
+        const growdever = new Growdever(data.nome, data.idade, data.cidade, data.cpf, data.password);
 
         const database = new GrowdeverRepository();
         const result = await database.create(growdever);
 
-        // const listGrowdever = await database.list();
-        // const resultList = listGrowdever.map((growdever) => growdever.toJson());
-
-        const cacheRepository = new CacheRepository();
-        await cacheRepository.delete("growdevers");
-        // await cacheRepository.set("growdevers", resultList);
+        // const cacheRepository = new CacheRepository();
+        // await cacheRepository.delete("growdevers");
 
         return {
             ok: true,
