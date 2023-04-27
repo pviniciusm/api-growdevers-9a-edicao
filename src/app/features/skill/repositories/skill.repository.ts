@@ -1,8 +1,9 @@
 import { DatabaseConnection } from "../../../../main/database/typeorm.connection";
 import { Skill } from "../../../models/skill.model";
 import { SkillEntity } from "../../../shared/database/entities/skill.entity";
+import { SkillRepositoryContract } from "../util/skill-repository.contract";
 
-export class SkillRepository {
+export class SkillRepository implements SkillRepositoryContract {
     private repository =
         DatabaseConnection.connection.getRepository(SkillEntity);
 

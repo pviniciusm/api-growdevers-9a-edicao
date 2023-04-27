@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { cpf as cpfValidator } from "cpf-cnpj-validator";
 import { ServerError } from "../errors/server.error";
 import { GrowdeverRepository } from "../../features/growdever/repositories/growdever.repository";
+import { RequestError } from "../errors/request.error";
 
 export class CpfValidatorMiddleware {
     public static cpfValidMiddleware(
@@ -13,10 +14,7 @@ export class CpfValidatorMiddleware {
             const { cpf } = req.body;
 
             if (!cpf) {
-                return res.status(400).send({
-                    ok: false,
-                    message: "CPF was not provided (middleware)",
-                });
+                return RequestError.fieldNotProvided(res, "CPF");
             }
 
             const cpfText = cpf.toString().padStart(11, "0");

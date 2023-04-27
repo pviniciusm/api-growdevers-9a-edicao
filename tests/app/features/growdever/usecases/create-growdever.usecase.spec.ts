@@ -5,8 +5,23 @@ import { RedisConnection } from "../../../../../src/main/database/redis.connecti
 import { DatabaseConnection } from "../../../../../src/main/database/typeorm.connection";
 import { CreateGrowdeverUsecase } from "./../../../../../src/app/features/growdever/usecases/create-growdever.usecase";
 import { Growdever } from "../../../../../src/app/models/growdever.model";
+import { CreateGrowdeverRepositoryContract } from "../../../../../src/app/features/growdever/util/growdever-repository.contract";
+import { CacheRepository } from "../../../../../src/app/shared/database/repositories/cache.repository";
+import { createGrowdeverUsecaseFactory } from "../../../../../src/app/features/growdever/util/growdever-usecase.factory";
 
-describe("Create growdever usecase tests", () => {
+class MockGrowdeverRepository implements CreateGrowdeverRepositoryContract {
+    public async create(growdever: Growdever): Promise<Growdever> {
+        return new Growdever(
+            growdever.nome,
+            growdever.idade,
+            "abc",
+            growdever.cpf,
+            growdever.password
+        );
+    }
+}
+
+describe("Create growdever usecase unit tests", () => {
     beforeAll(async () => {
         await DatabaseConnection.connect();
         await RedisConnection.connect();
@@ -23,7 +38,7 @@ describe("Create growdever usecase tests", () => {
     });
 
     const makeSut = () => {
-        return new CreateGrowdeverUsecase();
+        return createGrowdeverUsecaseFactory();
     };
 
     const growdever = {
@@ -73,15 +88,28 @@ describe("Create growdever usecase tests", () => {
         expect(result).toBeDefined();
         expect(result).toHaveProperty("ok", false);
         expect(result).toHaveProperty("code", 400);
-        expect(result).toHaveProperty("message", "Nome must be greater than 6 characters");
+        expect(result).toHaveProperty(
+            "message",
+            "Nome must be greater than 6 characters"
+        );
     });
 
     test("deveria retornar sucesso (201) se o growdever for criado com sucesso", async () => {
-        jest.spyOn(GrowdeverRepository.prototype, "create").mockResolvedValue(
-            new Growdever(growdever.nome, growdever.idade, growdever.cidade, growdever.cpf, growdever.password)
-        );
+        // jest.spyOn(GrowdeverRepository.prototype, "create").mockResolvedValue(
+        //     new Growdever(
+        //         growdever.nome,
+        //         growdever.idade,
+        //         growdever.cidade,
+        //         growdever.cpf,
+        //         growdever.password
+        //     )
+        // );
 
-        const sut = makeSut();
+        // const sut = makeSut();
+        const database = new MockGrowdeverRepository();
+        const cache = new CacheRepository();
+
+        const sut = new CreateGrowdeverUsecase(database, cache);
 
         const result = await sut.execute({
             ...growdever,
@@ -90,12 +118,17 @@ describe("Create growdever usecase tests", () => {
         expect(result).toBeDefined();
         expect(result).toHaveProperty("ok", true);
         expect(result).toHaveProperty("code", 201);
-        expect(result).toHaveProperty("message", "Growdever was successfully created");
+        expect(result).toHaveProperty(
+            "message",
+            "Growdever was successfully created"
+        );
 
         expect(result).toHaveProperty("data");
 
         expect(result).toHaveProperty("data.cpf");
-        let cpf = cpfValidator.format(result.data.cpf.toString().padStart(11, "0"));
+        let cpf = cpfValidator.format(
+            result.data.cpf.toString().padStart(11, "0")
+        );
         expect(result.data.cpf).toEqual(cpf);
 
         expect(result).toHaveProperty("data.nome", growdever.nome);

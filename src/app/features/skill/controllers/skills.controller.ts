@@ -3,6 +3,8 @@ import { RequestError } from "../../../shared/errors/request.error";
 import { GrowdeverRepository } from "../../growdever/repositories/growdever.repository";
 import { SkillRepository } from "../repositories/skill.repository";
 import { Skill } from "../../../models/skill.model";
+import { CreateSkillUsecase } from "../usecases/create-skill.usecase";
+import { createSkillUsecaseFactory } from "../util/create-skill-usecase.factory";
 
 export class SkillsController {
     // http://localhost:3333/growdever/5bd700e3-88ea-453a-ba62-27633d4a1f8b/skill
@@ -11,6 +13,7 @@ export class SkillsController {
             const { id } = req.params;
             const { nome, arquivada } = req.body;
 
+            // to-do: colocar em middleware
             if (!nome) {
                 return res.status(400).send({
                     ok: false,
@@ -18,6 +21,7 @@ export class SkillsController {
                 });
             }
 
+            // to-do: colocar em middleware
             if (arquivada === undefined) {
                 return res.status(400).send({
                     ok: false,
@@ -25,27 +29,14 @@ export class SkillsController {
                 });
             }
 
-            const growdeverDatabase = new GrowdeverRepository();
-            const growdever = await growdeverDatabase.get(id);
-
-            if (!growdever) {
-                return res.status(404).send({
-                    ok: false,
-                    message: "Growdever not found",
-                });
-            }
-
-            const database = new SkillRepository();
-            const result = await database.create(
+            const usecase = createSkillUsecaseFactory();
+            const result = await usecase.execute({
                 id,
-                new Skill(nome, arquivada)
-            );
-
-            return res.status(201).send({
-                ok: true,
-                message: "Skills success created",
-                data: result,
+                nome,
+                arquivada,
             });
+
+            return res.status(result.code).send(result);
         } catch (error: any) {
             return res.status(500).send({
                 ok: false,

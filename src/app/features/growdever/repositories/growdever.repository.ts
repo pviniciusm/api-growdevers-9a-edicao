@@ -2,8 +2,18 @@ import { DatabaseConnection } from "../../../../main/database/typeorm.connection
 import { GrowdeverEntity } from "../../../shared/database/entities/growdever.entity";
 import { Growdever } from "../../../models/growdever.model";
 import { SkillRepository } from "../../skill/repositories/skill.repository";
+import {
+    CreateGrowdeverRepositoryContract,
+    DeleteGrowdeverRepositoryContract,
+    GetGrowdeverRepositoryContract,
+} from "../util/growdever-repository.contract";
 
-export class GrowdeverRepository {
+export class GrowdeverRepository
+    implements
+        CreateGrowdeverRepositoryContract,
+        DeleteGrowdeverRepositoryContract,
+        GetGrowdeverRepositoryContract
+{
     private repository =
         DatabaseConnection.connection.getRepository(GrowdeverEntity);
 

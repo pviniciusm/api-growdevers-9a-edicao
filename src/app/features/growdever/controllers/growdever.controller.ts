@@ -7,6 +7,11 @@ import { GrowdeverRepository } from "../repositories/growdever.repository";
 import { CreateGrowdeverUsecase } from "../usecases/create-growdever.usecase";
 import { DeleteGrowdeverUsecase } from "../usecases/delete-growdever.usecase";
 import { ListGrowdeversUsecase } from "../usecases/list-growdevers.usecase";
+import { CacheRepository } from "../../../shared/database/repositories/cache.repository";
+import {
+    createGrowdeverUsecaseFactory,
+    deleteGrowdeverUsecaseFactory,
+} from "../util/growdever-usecase.factory";
 
 export class GrowdeverController {
     public async list(req: Request, res: Response) {
@@ -48,7 +53,8 @@ export class GrowdeverController {
         try {
             const { nome, idade, cidade, cpf, password } = req.body;
 
-            const result = await new CreateGrowdeverUsecase().execute({
+            const usecase = createGrowdeverUsecaseFactory();
+            const result = await usecase.execute({
                 nome,
                 idade,
                 cidade,
@@ -66,7 +72,7 @@ export class GrowdeverController {
         try {
             const { id } = req.params;
 
-            const usecase = new DeleteGrowdeverUsecase();
+            const usecase = deleteGrowdeverUsecaseFactory();
             const result = await usecase.execute(id);
 
             return res.status(result.code).send(result);

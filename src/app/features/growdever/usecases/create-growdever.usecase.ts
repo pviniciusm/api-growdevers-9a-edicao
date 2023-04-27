@@ -1,7 +1,9 @@
 import { Growdever } from "../../../models/growdever.model";
 import { CacheRepository } from "../../../shared/database/repositories/cache.repository";
+import { CacheRepositoryContract } from "../../../shared/util/cache-repository.contract";
 import { Return } from "../../../shared/util/usecase.return";
 import { GrowdeverRepository } from "../repositories/growdever.repository";
+import { CreateGrowdeverRepositoryContract } from "../util/growdever-repository.contract";
 
 interface CreateGrowdeverParams {
     nome: string;
@@ -12,6 +14,11 @@ interface CreateGrowdeverParams {
 }
 
 export class CreateGrowdeverUsecase {
+    constructor(
+        private database: CreateGrowdeverRepositoryContract,
+        private cacheRepository: CacheRepositoryContract
+    ) {}
+
     public async execute(data: CreateGrowdeverParams): Promise<Return> {
         if (data.idade < 18 || data.idade > 99) {
             return {
@@ -29,13 +36,21 @@ export class CreateGrowdeverUsecase {
             };
         }
 
-        const growdever = new Growdever(data.nome, data.idade, data.cidade, data.cpf, data.password);
+        const growdever = new Growdever(
+            data.nome,
+            data.idade,
+            data.cidade,
+            data.cpf,
+            data.password
+        );
 
-        const database = new GrowdeverRepository();
-        const result = await database.create(growdever);
+        growdever.idade = 10;
+
+        // const database = new GrowdeverRepository();
+        const result = await this.database.create(growdever);
 
         // const cacheRepository = new CacheRepository();
-        // await cacheRepository.delete("growdevers");
+        await this.cacheRepository.delete("growdevers");
 
         return {
             ok: true,

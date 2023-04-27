@@ -1,7 +1,8 @@
 import { Redis } from "ioredis";
 import { RedisConnection } from "../../../../main/database/redis.connection";
+import { CacheRepositoryContract } from "../../util/cache-repository.contract";
 
-export class CacheRepository {
+export class CacheRepository implements CacheRepositoryContract {
     private repository: Redis = RedisConnection.connection;
 
     public async get<T>(key: string) {
