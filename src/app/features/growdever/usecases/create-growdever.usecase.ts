@@ -44,8 +44,6 @@ export class CreateGrowdeverUsecase {
             data.password
         );
 
-        growdever.idade = 10;
-
         // const database = new GrowdeverRepository();
         const result = await this.database.create(growdever);
 

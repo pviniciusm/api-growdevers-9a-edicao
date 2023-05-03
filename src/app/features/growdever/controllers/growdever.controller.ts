@@ -84,7 +84,18 @@ export class GrowdeverController {
     public async update(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const { idade } = req.body;
+            const { idade, filled } = req.body;
+
+            if (filled) {
+                try {
+                    const booleanFilled = JSON.parse(filled);
+                    if (booleanFilled !== true && booleanFilled !== false) {
+                        // erro 400
+                    }
+                } catch (error) {
+                    // erro 400
+                }
+            }
 
             const database = new GrowdeverRepository();
             const result = await database.updateWithSave(id, idade);

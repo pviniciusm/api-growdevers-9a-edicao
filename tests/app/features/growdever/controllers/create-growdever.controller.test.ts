@@ -7,6 +7,7 @@ import { createApp } from "../../../../../src/main/config/express.config";
 import { CreateGrowdeverUsecase } from "../../../../../src/app/features/growdever/usecases/create-growdever.usecase";
 import { GrowdeverRepository } from "../../../../../src/app/features/growdever/repositories/growdever.repository";
 import { Growdever } from "../../../../../src/app/models/growdever.model";
+import { GrowdeverEntity } from "../../../../../src/app/shared/database/entities/growdever.entity";
 
 describe("Create growdever controller unit tests", () => {
     beforeAll(async () => {
@@ -19,9 +20,13 @@ describe("Create growdever controller unit tests", () => {
         await RedisConnection.connection.quit();
     });
 
-    beforeEach(() => {
+    beforeEach(async () => {
         jest.clearAllMocks();
         jest.resetAllMocks();
+
+        await DatabaseConnection.connection
+            .getRepository(GrowdeverEntity)
+            .clear();
     });
 
     const app = createApp();
@@ -113,9 +118,23 @@ describe("Create growdever controller unit tests", () => {
     test("deveria retornar status 400 se o CPF já existir", async () => {
         jest.spyOn(cpfValidator, "isValid").mockReturnValue(true);
 
-        jest.spyOn(GrowdeverRepository.prototype, "getByCpf").mockResolvedValue(
-            new Growdever("any_name", 20, "any_city", 12345, "any_password")
-        );
+        // jest.spyOn(GrowdeverRepository.prototype, "getByCpf").mockResolvedValue(
+        //     new Growdever("any_name", 20, "any_city", 12345, "any_password")
+        // );
+
+        const repository =
+            DatabaseConnection.connection.getRepository(GrowdeverEntity);
+
+        await repository
+            .create({
+                cpf: 5160901000,
+                id: "any_id",
+                nome: "any_name",
+                idade: 20,
+                indAtivo: true,
+                nota: 20,
+            })
+            .save();
 
         const res = await request(app).post("/growdever").send({
             nome: "any_name",
@@ -155,19 +174,6 @@ describe("Create growdever controller unit tests", () => {
 
     test("deveria retornar status 201 quando o usecase executar com sucesso", async () => {
         jest.spyOn(cpfValidator, "isValid").mockReturnValue(true);
-        jest.spyOn(GrowdeverRepository.prototype, "getByCpf").mockResolvedValue(
-            null
-        );
-
-        jest.spyOn(
-            CreateGrowdeverUsecase.prototype,
-            "execute"
-        ).mockResolvedValue({
-            ok: true,
-            code: 201,
-            message: "Teste",
-            data: {},
-        });
 
         const res = await request(app).post("/growdever").send({
             nome: "any_name",

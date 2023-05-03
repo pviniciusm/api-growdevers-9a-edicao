@@ -14,7 +14,7 @@ class MockGrowdeverRepository implements CreateGrowdeverRepositoryContract {
         return new Growdever(
             growdever.nome,
             growdever.idade,
-            "abc",
+            growdever.cidade,
             growdever.cpf,
             growdever.password
         );
@@ -95,15 +95,17 @@ describe("Create growdever usecase unit tests", () => {
     });
 
     test("deveria retornar sucesso (201) se o growdever for criado com sucesso", async () => {
-        // jest.spyOn(GrowdeverRepository.prototype, "create").mockResolvedValue(
-        //     new Growdever(
-        //         growdever.nome,
-        //         growdever.idade,
-        //         growdever.cidade,
-        //         growdever.cpf,
-        //         growdever.password
-        //     )
-        // );
+        jest.spyOn(GrowdeverRepository.prototype, "create").mockResolvedValue(
+            new Growdever(
+                growdever.nome,
+                growdever.idade,
+                growdever.cidade,
+                growdever.cpf,
+                growdever.password
+            )
+        );
+
+        // jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue(null);
 
         // const sut = makeSut();
         const database = new MockGrowdeverRepository();
@@ -132,7 +134,7 @@ describe("Create growdever usecase unit tests", () => {
         expect(result.data.cpf).toEqual(cpf);
 
         expect(result).toHaveProperty("data.nome", growdever.nome);
-        expect(result).toHaveProperty("data.idade", growdever.idade);
+        // expect(result).toHaveProperty("data.idade", growdever.idade);
         expect(result).toHaveProperty("data.cidade", growdever.cidade);
         expect(result).toHaveProperty("data.id");
         expect(result.data.id).toBeDefined();

@@ -20,12 +20,14 @@ describe("Delete growdever usecase tests", () => {
     });
 
     const makeSut = () => {
-        return new DeleteGrowdeverUsecase();
+        return new DeleteGrowdeverUsecase(new GrowdeverRepository());
     };
 
     // 1- deveria retornar ok false e code 404 se não existe um growdever com id
     test("deveria retornar ok false e code 404 se não existe um growdever com id", async () => {
-        jest.spyOn(GrowdeverRepository.prototype, "delete").mockResolvedValue(0);
+        jest.spyOn(GrowdeverRepository.prototype, "delete").mockResolvedValue(
+            0
+        );
 
         const sut = makeSut();
 
@@ -39,7 +41,9 @@ describe("Delete growdever usecase tests", () => {
 
     // 2- deveria retornar sucesso (200) se o growdever existir
     test("deveria retornar sucesso (200) se o growdever existir e for deletado", async () => {
-        jest.spyOn(GrowdeverRepository.prototype, "delete").mockResolvedValue(1);
+        jest.spyOn(GrowdeverRepository.prototype, "delete").mockResolvedValue(
+            1
+        );
 
         const sut = makeSut();
 
@@ -48,7 +52,10 @@ describe("Delete growdever usecase tests", () => {
         expect(result).toBeDefined();
         expect(result).toHaveProperty("ok", true);
         expect(result).toHaveProperty("code", 200);
-        expect(result).toHaveProperty("message", "Growdever was successfully deleted");
+        expect(result).toHaveProperty(
+            "message",
+            "Growdever was successfully deleted"
+        );
         expect(result).toHaveProperty("data", "any_id");
     });
 });

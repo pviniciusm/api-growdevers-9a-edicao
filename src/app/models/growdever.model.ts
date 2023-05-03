@@ -25,6 +25,11 @@ export class Growdever {
         return this._idade;
     }
 
+    // getter
+    public get cidade() {
+        return this._cidade;
+    }
+
     // setter
     public set idade(idade: number) {
         this._idade = idade;
