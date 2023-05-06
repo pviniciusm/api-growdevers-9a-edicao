@@ -9,6 +9,7 @@ import {
     LogMiddleware,
 } from "../../../shared/middlewares/log.middleware";
 import { skillRoutes } from "../../skill/routes/skill.routes";
+import { projectRoutes } from "../../projeto/routes/project.routes";
 
 const middlewaresForMethodAndLog = [
     logMethodMiddleware,
@@ -51,6 +52,7 @@ export const growdeverRoutes = () => {
     );
 
     app.use("/:id/skill", skillRoutes());
+    app.use("/:id/project", projectRoutes());
 
     return app;
 };

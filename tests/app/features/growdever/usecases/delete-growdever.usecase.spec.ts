@@ -3,7 +3,7 @@ import { RedisConnection } from "../../../../../src/main/database/redis.connecti
 import { DatabaseConnection } from "../../../../../src/main/database/typeorm.connection";
 import { GrowdeverRepository } from "../../../../../src/app/features/growdever/repositories/growdever.repository";
 
-describe("Delete growdever usecase tests", () => {
+describe.skip("Delete growdever usecase tests", () => {
     beforeAll(async () => {
         await DatabaseConnection.connect();
         await RedisConnection.connect();

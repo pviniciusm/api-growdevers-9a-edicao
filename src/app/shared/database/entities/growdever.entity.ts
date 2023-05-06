@@ -12,6 +12,7 @@ import {
 } from "typeorm";
 import { EnderecoEntity } from "./endereco.entity";
 import { SkillEntity } from "./skill.entity";
+import { ProjectEntity } from "./project.entity";
 
 @Entity({
     name: "growdever",
@@ -53,6 +54,11 @@ export class GrowdeverEntity extends BaseEntity {
         eager: true,
     })
     skills: SkillEntity[];
+
+    @OneToMany(() => ProjectEntity, (project) => project.growdever, {
+        eager: true,
+    })
+    projects: ProjectEntity[];
 
     @OneToOne(() => EnderecoEntity, (endereco) => endereco.growdever)
     endereco: EnderecoEntity;

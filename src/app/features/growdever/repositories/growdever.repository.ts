@@ -7,12 +7,16 @@ import {
     DeleteGrowdeverRepositoryContract,
     GetGrowdeverRepositoryContract,
 } from "../util/growdever-repository.contract";
+import { GetGrowdeverContract } from "../contracts/get-growdever.contract";
+import { ProjectEntity } from "../../../shared/database/entities/project.entity";
+import { Project } from "../../../models/project.model";
 
 export class GrowdeverRepository
     implements
         CreateGrowdeverRepositoryContract,
         DeleteGrowdeverRepositoryContract,
-        GetGrowdeverRepositoryContract
+        GetGrowdeverRepositoryContract,
+        GetGrowdeverContract
 {
     private repository =
         DatabaseConnection.connection.getRepository(GrowdeverEntity);
@@ -30,7 +34,7 @@ export class GrowdeverRepository
         return result.map((growdever: any) => this.mapEntityToModel(growdever));
     }
 
-    private mapEntityToModel(entity: GrowdeverEntity): Growdever {
+    public mapEntityToModel(entity: GrowdeverEntity): Growdever {
         const skillsEntity = entity.skills ?? [];
 
         const skills = skillsEntity.map((item) =>
@@ -43,7 +47,7 @@ export class GrowdeverRepository
             cidade = entity.endereco.cidade;
         }
 
-        return Growdever.create(
+        const growdever = Growdever.create(
             entity.id.trim(),
             entity.nome,
             entity.idade,
@@ -51,6 +55,21 @@ export class GrowdeverRepository
             entity.cpf,
             "indefinido",
             skills
+        );
+
+        return growdever;
+    }
+
+    private mapProjectEntityToModel(
+        entity: ProjectEntity,
+        growdever: Growdever
+    ): Project {
+        return Project.create(
+            entity.id,
+            entity.nome,
+            entity.indAtivo,
+            entity.dtEntrega,
+            growdever
         );
     }
 

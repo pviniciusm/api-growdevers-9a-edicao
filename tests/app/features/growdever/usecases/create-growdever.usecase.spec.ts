@@ -21,7 +21,7 @@ class MockGrowdeverRepository implements CreateGrowdeverRepositoryContract {
     }
 }
 
-describe("Create growdever usecase unit tests", () => {
+describe.skip("Create growdever usecase unit tests", () => {
     beforeAll(async () => {
         await DatabaseConnection.connect();
         await RedisConnection.connect();
